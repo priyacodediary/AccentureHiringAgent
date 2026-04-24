@@ -28,52 +28,41 @@
 </head>
 <body>
   <h2>Shortlisted Candidates</h2>
-  <div id="candidates">Loading candidates...</div>
+  <div id="candidates"></div>
 
   <script>
-    // Replace with your AI Foundry shortlist API endpoint
-    const SHORTLIST_API = "https://<foundry-endpoint>/shortlist";
-    const DECISION_API = "https://<foundry-endpoint>/decision";
+    // Mock candidate data for testing UI
+    const mockData = [
+      { id: 1, name: "Alice Johnson", email: "alice@example.com", skills: ["Java", "SQL"] },
+      { id: 2, name: "Bob Smith", email: "bob@example.com", skills: ["Python", "Azure"] },
+      { id: 3, name: "Charlie Lee", email: "charlie@example.com", skills: ["React", "Node.js"] }
+    ];
 
-    async function loadCandidates() {
-      try {
-        const res = await fetch(SHORTLIST_API);
-        const data = await res.json();
-        const container = document.getElementById("candidates");
-        container.innerHTML = "";
-        data.forEach(c => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <strong>${c.name}</strong><br>
-            Email: ${c.email}<br>
-            Skills: ${c.skills.join(", ")}<br>
-            <button class="approve" onclick="approve(${c.id})">Approve</button>
-            <button class="reject" onclick="reject(${c.id})">Reject</button>
-          `;
-          container.appendChild(card);
-        });
-      } catch (err) {
-        document.getElementById("candidates").innerText = "Error loading candidates.";
-      }
+    function loadCandidates() {
+      const container = document.getElementById("candidates");
+      container.innerHTML = "";
+      mockData.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <strong>${c.name}</strong><br>
+          Email: ${c.email}<br>
+          Skills: ${c.skills.join(", ")}<br>
+          <button class="approve" onclick="approve(${c.id})">Approve</button>
+          <button class="reject" onclick="reject(${c.id})">Reject</button>
+        `;
+        container.appendChild(card);
+      });
     }
 
-    async function approve(id) {
-      await fetch(DECISION_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ candidateId: id, status: "Approved" })
-      });
-      alert("Candidate approved!");
+    function approve(id) {
+      alert("Candidate " + id + " approved!");
+      // Later: send POST to your AI Foundry /decision endpoint
     }
 
-    async function reject(id) {
-      await fetch(DECISION_API, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ candidateId: id, status: "Rejected" })
-      });
-      alert("Candidate rejected!");
+    function reject(id) {
+      alert("Candidate " + id + " rejected!");
+      // Later: send POST to your AI Foundry /decision endpoint
     }
 
     loadCandidates();
