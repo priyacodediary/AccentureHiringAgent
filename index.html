@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HR Candidate Approval</title>
+  <style>
+    body { font-family: Arial; margin: 20px; }
+    .card { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    button { margin-right: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Shortlisted Candidates</h2>
+  <div id="candidates"></div>
+
+  <script>
+    async function loadCandidates() {
+      const res = await fetch("https://<foundry-endpoint>/shortlist");
+      const data = await res.json();
+      const container = document.getElementById("candidates");
+      data.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <strong>${c.name}</strong><br>
+          Email: ${c.email}<br>
+          Skills: ${c.skills.join(", ")}<br>
+          <button onclick="approve(${c.id})">Approve</button>
+          <button onclick="reject(${c.id})">Reject</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function approve(id) {
+      await fetch("https://<foundry-endpoint>/decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ candidateId: id, status: "Approved" })
+      });
+      alert("Candidate approved!");
+    }
+
+    async function reject(id) {
+      await fetch("https://<foundry-endpoint>/decision", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ candidateId: id, status: "Rejected" })
+      });
+      alert("Candidate rejected!");
+    }
+
+    loadCandidates();
+  </script>
+</body>
+</html>
