@@ -54,24 +54,28 @@
       });
       const data = await res.json();
 
-      // Parse agent reply safely
+    // Parse agent reply safely
 let candidates = [];
 try {
-  // Navigate response structure carefully
-  const output = data.output || [];
-  const firstContent = output[0]?.content || [];
-  const replyText = firstContent[0]?.text;
+  // Check if agent returned output
+  if (data.output && data.output.length > 0) {
+    const firstContent = data.output[0].content || [];
+    const replyText = firstContent[0]?.text;
 
-  if (!replyText) {
-    throw new Error("No text found in agent response");
+    if (replyText) {
+      // Try to parse JSON
+      candidates = JSON.parse(replyText);
+    } else {
+      alert("Agent response did not contain text.");
+    }
+  } else {
+    alert("Agent response did not contain output.");
   }
-
-  // Try to parse JSON
-  candidates = JSON.parse(replyText);
 } catch (err) {
   alert("Agent did not return valid JSON: " + err.message);
 }
 renderCandidates(candidates);
+
 
 
     // Render candidates with Approve/Reject buttons
