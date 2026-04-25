@@ -179,7 +179,7 @@
   // ── Config ──────────────────────────────────────────────────────────
   const ENDPOINT   = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon";
   const AGENT_NAME = "AccentureHiringAgent";
-  const AGENT_VER  = "9";
+  const AGENT_VER  = "5";
   const API_VERSION = "2025-11-15-preview";
 
   // ✅ FIX: No ?api-version= in the URL — it goes in the request header instead
@@ -329,44 +329,82 @@ Minimum Experience: ${exp} years`;
     section.style.display = 'block';
   }
 
+  // ── Approved candidates store ─────────────────────────────────────────
+  const approvedCandidates = {};
+
   // ── Approve / Reject ─────────────────────────────────────────────────
   function decide(id, status) {
-    document.getElementById(`card-${id}`).classList.add(status);
-    document.getElementById(`actions-${id}`).innerHTML =
-      `<span class="decision-badge ${status}">${status}</span>`;
+    const card   = document.getElementById(`card-${id}`);
+    const actions = document.getElementById(`actions-${id}`);
+
+    card.classList.add(status);
+    actions.innerHTML = `<span class="decision-badge ${status}">${status}</span>`;
 
     if (status === 'approved') {
-      sendDecisionToAgent(id, status);
+      // Store candidate details
+      approvedCandidates[id] = {
+        name:   card.querySelector('.candidate-name').textContent.trim(),
+        email:  card.querySelector('.candidate-email').textContent.trim(),
+        role:   card.querySelector('.meta-tag:nth-child(1) span').textContent.trim(),
+        exp:    card.querySelector('.meta-tag:nth-child(2) span').textContent.trim(),
+        loc:    card.querySelector('.meta-tag:nth-child(3) span').textContent.trim(),
+        skills: card.querySelector('.meta-tag:nth-child(4) span').textContent.trim()
+      };
+    } else {
+      delete approvedCandidates[id];
     }
+
+    updateSendButton();
   }
 
-  // ── Send decision back to Agent ───────────────────────────────────────
-  async function sendDecisionToAgent(candidateId, status) {
+  // ── Show/hide Send to Recruiter button ────────────────────────────────
+  function updateSendButton() {
+    const count = Object.keys(approvedCandidates).length;
+    let btn = document.getElementById('send-recruiter-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.id = 'send-recruiter-btn';
+      btn.style.cssText = `
+        display:block; margin:20px auto 0; padding:14px 36px;
+        background:var(--approve); color:#000; border:none; border-radius:8px;
+        font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:700;
+        letter-spacing:.1em; text-transform:uppercase; cursor:pointer;
+      `;
+      btn.onclick = sendAllApprovedToRecruiter;
+      document.getElementById('candidates-section').appendChild(btn);
+    }
+    btn.style.display = count > 0 ? 'block' : 'none';
+    btn.textContent   = `📧 Send ${count} Approved Candidate${count !== 1 ? 's' : ''} to Recruiter →`;
+  }
+
+  // ── Send ALL approved candidates in one agent call ────────────────────
+  async function sendAllApprovedToRecruiter() {
     const token = document.getElementById('token-input').value.trim();
+    const candidates = Object.values(approvedCandidates);
+    if (!candidates.length) return;
 
-    // Grab candidate details from the card
-    const card = document.getElementById(`card-${candidateId}`);
-    const name  = card.querySelector('.candidate-name').textContent;
-    const email = card.querySelector('.candidate-email').textContent;
-    const role  = card.querySelector('.meta-tag:nth-child(1) span').textContent;
-    const exp   = card.querySelector('.meta-tag:nth-child(2) span').textContent;
-    const loc   = card.querySelector('.meta-tag:nth-child(3) span').textContent;
-    const skills = card.querySelector('.meta-tag:nth-child(4) span').textContent;
+    const btn = document.getElementById('send-recruiter-btn');
+    btn.disabled    = true;
+    btn.textContent = '⟳ Sending to recruiter…';
 
-    const notifyMsg = `A candidate has been approved. Please notify the recruiter with the following details:
+    const candidateList = candidates.map((c, i) =>
+      `Candidate ${i + 1}:
+  - Name:       ${c.name}
+  - Email:      ${c.email}
+  - Role:       ${c.role}
+  - Experience: ${c.exp}
+  - Skills:     ${c.skills}
+  - Location:   ${c.loc}`
+    ).join('\n\n');
 
-Candidate ID: ${candidateId}
-Name: ${name}
-Email: ${email}
-Role: ${role}
-Experience: ${exp}
-Location: ${loc}
-Skills: ${skills}
-Decision: APPROVED
+    const notifyMsg = `The following ${candidates.length} candidate(s) have been APPROVED by the hiring manager.
+Please send ALL of them in a single email to the recruiter using the sendRecruiterEmail tool.
 
-Use the Candidate Decision API to record this decision and send the candidate details to the recruiter via email.`;
+${candidateList}
 
-    showDecisionStatus(candidateId, 'sending');
+Recruiter Email: priya.2611@hotmail.com
+
+Send one consolidated email listing all approved candidates above. Confirm once sent.`;
 
     try {
       const res = await fetch(AGENT_URL, {
@@ -379,44 +417,27 @@ Use the Candidate Decision API to record this decision and send the candidate de
         body: JSON.stringify({
           model: "gpt-4.1",
           input: [{ role: "user", content: notifyMsg }],
-          agent_reference: {
-            name: AGENT_NAME,
-            version: AGENT_VER,
-            type: "agent_reference"
-          }
+          agent_reference: { name: AGENT_NAME, version: AGENT_VER, type: "agent_reference" }
         })
       });
 
-      const rawText = await res.text();
-      console.log(`Decision API HTTP ${res.status}`, rawText);
+      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${rawText}`);
-
-      showDecisionStatus(candidateId, 'sent');
+      btn.style.background = 'var(--accent)';
+      btn.style.color      = '#fff';
+      btn.textContent      = `✓ Recruiter notified for ${candidates.length} candidate(s)!`;
+      btn.disabled         = true;
 
     } catch (err) {
-      console.error('Decision send failed:', err);
-      showDecisionStatus(candidateId, 'failed');
+      console.error('Recruiter notify failed:', err);
+      btn.disabled        = false;
+      btn.style.background = 'var(--reject)';
+      btn.style.color      = '#fff';
+      btn.textContent      = '✗ Failed — check console';
     }
   }
 
-  // ── Decision status indicator ─────────────────────────────────────────
-  function showDecisionStatus(candidateId, state) {
-    const card = document.getElementById(`card-${candidateId}`);
-    let indicator = card.querySelector('.recruiter-status');
-    if (!indicator) {
-      indicator = document.createElement('div');
-      indicator.className = 'recruiter-status';
-      card.querySelector('.action-btns')?.after(indicator) || card.appendChild(indicator);
-    }
-    const states = {
-      sending: { text: '⟳ Notifying recruiter…', color: 'var(--accent-light)' },
-      sent:    { text: '✓ Recruiter notified',    color: 'var(--approve)' },
-      failed:  { text: '✗ Notification failed — check console', color: 'var(--reject)' }
-    };
-    indicator.textContent = states[state].text;
-    indicator.style.cssText = `margin-top:8px; font-size:.78rem; color:${states[state].color};`;
-  }
+
 
   // ── Helpers ───────────────────────────────────────────────────────────
   function showStatus(type, msg) {
