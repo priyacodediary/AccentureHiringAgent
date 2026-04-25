@@ -178,10 +178,7 @@
 <script>
   // ── Config ──────────────────────────────────────────────────────────
   const AGENT_NAME  = "AccentureHiringAgent";
-  const AGENT_VER   = "13";
-
-
-  // api-version MUST be a query param in the URL — NOT a header
+  const AGENT_VER   = "14";
   const AGENT_URL = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/openai/v1/responses";
 
   // ── Token check ─────────────────────────────────────────────────────
@@ -398,14 +395,25 @@ Minimum Experience: ${exp} years`;
   - Location:   ${c.loc}`
     ).join('\n\n');
 
+    const candidateHTML = candidates.map((c, i) => `
+--- Candidate ${i + 1} ---
+Name:       ${c.name}
+Email:      ${c.email}
+Role:       ${c.role}
+Experience: ${c.exp}
+Skills:     ${c.skills}
+Location:   ${c.loc}`).join('\n');
+
     const notifyMsg = `The following ${candidates.length} candidate(s) have been APPROVED by the hiring manager.
-Please send ALL of them in a single email to the recruiter using the sendRecruiterEmail tool.
 
-${candidateList}
+Call sendRecruiterEmail ONCE with these EXACT fields:
+- recruiterEmail: "priya.2611@hotmail.com"
+- candidateList: the full text below (all candidates, all details)
 
-Recruiter Email: priya.2611@hotmail.com
+CANDIDATE DETAILS:
+${candidateHTML}
 
-Send one consolidated email listing all approved candidates above. Confirm once sent.`;
+IMPORTANT: Send as ONE single email. Include ALL candidate details above in the candidateList field. Do not summarise or shorten.`;
 
     try {
       await callAgent(token, notifyMsg);
