@@ -55,21 +55,18 @@
       const data = await res.json();
 
     // Parse agent reply safely
+console.log("Agent raw response:", data); // <-- See full structure in console
+
 let candidates = [];
 try {
-  // Check if agent returned output
-  if (data.output && data.output.length > 0) {
-    const firstContent = data.output[0].content || [];
-    const replyText = firstContent[0]?.text;
+  const output = data.output || [];
+  const replyText = output[0]?.content?.[0]?.text;
 
-    if (replyText) {
-      // Try to parse JSON
-      candidates = JSON.parse(replyText);
-    } else {
-      alert("Agent response did not contain text.");
-    }
+  if (replyText) {
+    // Try parsing JSON
+    candidates = JSON.parse(replyText);
   } else {
-    alert("Agent response did not contain output.");
+    alert("Agent response did not contain text. Raw response logged in console.");
   }
 } catch (err) {
   alert("Agent did not return valid JSON: " + err.message);
