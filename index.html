@@ -117,7 +117,7 @@
   const AGENT_VER   = "5";
   const API_VERSION = "2025-11-15-preview";
 
-  const AGENT_URL = `${ENDPOINT}/openai/responses?api-version=${API_VERSION}`;
+  const AGENT_URL = `${ENDPOINT}/openai/v1/responses?api-version=${API_VERSION}`;
 
   function checkToken() {
     const token = document.getElementById('token-input').value.trim();
