@@ -229,7 +229,7 @@ Required Skills: ${skills}
 Minimum Experience: ${exp} years`;
 
     const payload = {
-      model: "gpt-4o",
+      model: "gpt-4.1",
       input: [{ role: "user", content: userMessage }],
       agent_reference: {               // ✅ top-level, not inside extra_body
         name: AGENT_NAME,
