@@ -179,11 +179,12 @@
   // ── Config ──────────────────────────────────────────────────────────
   const ENDPOINT   = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon";
   const AGENT_NAME = "AccentureHiringAgent";
-  const AGENT_VER  = "11";
+  const AGENT_VER  = "12";
   const API_VERSION = "2025-11-15-preview";
 
   // ✅ FIX: No ?api-version= in the URL — it goes in the request header instead
-  const AGENT_URL = `${ENDPOINT}/openai/v1/responses`;
+  const AGENT_URL = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/agents/AccentureHiringAgent/protocols/openai/v1/responses";
+
 
   // ── Token check ─────────────────────────────────────────────────────
   function checkToken() {
