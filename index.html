@@ -177,14 +177,12 @@
 
 <script>
   // ── Config ──────────────────────────────────────────────────────────
-  const ENDPOINT   = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon";
-  const AGENT_NAME = "AccentureHiringAgent";
-  const AGENT_VER  = "12";
+  const AGENT_NAME  = "AccentureHiringAgent";
+  const AGENT_VER   = "12";
   const API_VERSION = "2025-11-15-preview";
 
-  // ✅ FIX: No ?api-version= in the URL — it goes in the request header instead
-  const AGENT_URL = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/agents/AccentureHiringAgent/protocols/openai/v1/responses";
-
+  // api-version MUST be a query param in the URL — NOT a header
+  const AGENT_URL = `https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/agents/AccentureHiringAgent/protocols/openai/v1/responses?api-version=${API_VERSION}`;
 
   // ── Token check ─────────────────────────────────────────────────────
   function checkToken() {
@@ -199,7 +197,40 @@
     }
   }
 
-  // ── Submit ───────────────────────────────────────────────────────────
+  // ── Shared fetch helper ──────────────────────────────────────────────
+  async function callAgent(token, userMessage) {
+    const payload = {
+      model: "gpt-4.1",
+      input: [{ role: "user", content: userMessage }],
+      agent_reference: {
+        name: AGENT_NAME,
+        version: AGENT_VER,
+        type: "agent_reference"
+      }
+    };
+
+    const res = await fetch(AGENT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+        // ✅ No api-version header — it's in the URL above
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const rawText = await res.text();
+    console.log(`HTTP ${res.status}`, rawText);
+
+    if (res.status === 400) throw new Error(`Bad Request (400)\n\n${rawText}`);
+    if (res.status === 401) throw new Error('Token expired or invalid.\n\nRe-run in Azure Cloud Shell:\naz account get-access-token --resource https://ai.azure.com --query accessToken -o tsv');
+    if (res.status === 403) throw new Error('Access denied (403). Make sure your Azure account has the "Azure AI User" role on the Foundry project.');
+    if (!res.ok)            throw new Error(`HTTP ${res.status}\n\n${rawText}`);
+
+    return rawText;
+  }
+
+  // ── Submit Job ───────────────────────────────────────────────────────
   async function submitJob() {
     const token = document.getElementById('token-input').value.trim();
     if (!token) { showStatus('error', '❌ Please paste your Bearer token in Step 1 first.'); return; }
@@ -229,36 +260,9 @@ Job Description: ${desc}
 Required Skills: ${skills}
 Minimum Experience: ${exp} years`;
 
-    const payload = {
-      model: "gpt-4.1",
-      input: [{ role: "user", content: userMessage }],
-      agent_reference: {               // ✅ top-level, not inside extra_body
-        name: AGENT_NAME,
-        version: AGENT_VER,
-        type: "agent_reference"
-      }
-    };
-
     try {
-      const res = await fetch(AGENT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'api-version': API_VERSION      // ✅ FIX: version in header, not URL
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const rawText = await res.text();
-      console.log(`HTTP ${res.status}`, rawText);
-
-      if (res.status === 400) throw new Error(`Bad Request (400) — check agent name/version or payload shape.\n\n${rawText}`);
-      if (res.status === 401) throw new Error('Token expired or invalid.\n\nRe-run in Azure Cloud Shell:\naz account get-access-token --resource https://ai.azure.com --query accessToken -o tsv');
-      if (res.status === 403) throw new Error('Access denied (403). Make sure your Azure account has the "Azure AI User" role on the Foundry project.');
-      if (!res.ok) throw new Error(`HTTP ${res.status}\n\n${rawText}`);
-
-      const data = JSON.parse(rawText);
+      const rawText = await callAgent(token, userMessage);
+      const data    = JSON.parse(rawText);
 
       // Extract text from response
       let replyText = '';
@@ -289,7 +293,7 @@ Minimum Experience: ${exp} years`;
     }
   }
 
-  // ── Render ───────────────────────────────────────────────────────────
+  // ── Render candidates ────────────────────────────────────────────────
   function renderCandidates(candidates) {
     const container = document.getElementById('candidates');
     const section   = document.getElementById('candidates-section');
@@ -330,19 +334,18 @@ Minimum Experience: ${exp} years`;
     section.style.display = 'block';
   }
 
-  // ── Approved candidates store ─────────────────────────────────────────
+  // ── Approved candidates store ────────────────────────────────────────
   const approvedCandidates = {};
 
   // ── Approve / Reject ─────────────────────────────────────────────────
   function decide(id, status) {
-    const card   = document.getElementById(`card-${id}`);
+    const card    = document.getElementById(`card-${id}`);
     const actions = document.getElementById(`actions-${id}`);
 
     card.classList.add(status);
     actions.innerHTML = `<span class="decision-badge ${status}">${status}</span>`;
 
     if (status === 'approved') {
-      // Store candidate details
       approvedCandidates[id] = {
         name:   card.querySelector('.candidate-name').textContent.trim(),
         email:  card.querySelector('.candidate-email').textContent.trim(),
@@ -358,7 +361,7 @@ Minimum Experience: ${exp} years`;
     updateSendButton();
   }
 
-  // ── Show/hide Send to Recruiter button ────────────────────────────────
+  // ── Show/hide Send to Recruiter button ───────────────────────────────
   function updateSendButton() {
     const count = Object.keys(approvedCandidates).length;
     let btn = document.getElementById('send-recruiter-btn');
@@ -378,9 +381,9 @@ Minimum Experience: ${exp} years`;
     btn.textContent   = `📧 Send ${count} Approved Candidate${count !== 1 ? 's' : ''} to Recruiter →`;
   }
 
-  // ── Send ALL approved candidates in one agent call ────────────────────
+  // ── Send ALL approved candidates to recruiter ────────────────────────
   async function sendAllApprovedToRecruiter() {
-    const token = document.getElementById('token-input').value.trim();
+    const token      = document.getElementById('token-input').value.trim();
     const candidates = Object.values(approvedCandidates);
     if (!candidates.length) return;
 
@@ -408,21 +411,7 @@ Recruiter Email: priya.2611@hotmail.com
 Send one consolidated email listing all approved candidates above. Confirm once sent.`;
 
     try {
-      const res = await fetch(AGENT_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'api-version': API_VERSION
-        },
-        body: JSON.stringify({
-          model: "gpt-4.1",
-          input: [{ role: "user", content: notifyMsg }],
-          agent_reference: { name: AGENT_NAME, version: AGENT_VER, type: "agent_reference" }
-        })
-      });
-
-      if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+      await callAgent(token, notifyMsg);
 
       btn.style.background = 'var(--accent)';
       btn.style.color      = '#fff';
@@ -431,14 +420,12 @@ Send one consolidated email listing all approved candidates above. Confirm once 
 
     } catch (err) {
       console.error('Recruiter notify failed:', err);
-      btn.disabled        = false;
+      btn.disabled         = false;
       btn.style.background = 'var(--reject)';
       btn.style.color      = '#fff';
       btn.textContent      = '✗ Failed — check console';
     }
   }
-
-
 
   // ── Helpers ───────────────────────────────────────────────────────────
   function showStatus(type, msg) {
