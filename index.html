@@ -229,10 +229,12 @@ Required Skills: ${skills}
 Minimum Experience: ${exp} years`;
 
     const payload = {
-      model: "gpt-4o",                   // ✅ required even when using agent routing
+      model: "gpt-4o",
       input: [{ role: "user", content: userMessage }],
-      extra_body: {
-        agent_reference: { name: AGENT_NAME, version: AGENT_VER, type: "agent_reference" }
+      agent_reference: {               // ✅ top-level, not inside extra_body
+        name: AGENT_NAME,
+        version: AGENT_VER,
+        type: "agent_reference"
       }
     };
 
