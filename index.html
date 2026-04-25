@@ -49,10 +49,14 @@
 
       try {
         const res = await fetch(agentUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer 40faJDvzNVYJkJw91JH0c5rWyCEowDoWXrnst3NzKOdqIoK89MxfJQQJ99CDACHYHv6XJ3w3AAAAACOGxTiA"
+  },
+  body: JSON.stringify(payload)
+});
+
         const data = await res.json();
         console.log("Agent raw response:", data);
 
