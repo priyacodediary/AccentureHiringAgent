@@ -6,57 +6,119 @@
   <title>Accenture Hiring Agent</title>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    :root { --accent:#a100ff; --accent-light:#c84aff; --bg:#0a0a0f; --surface:#111118; --border:#2a2a3a; --text:#e8e8f0; --muted:#7070a0; --approve:#00e676; --reject:#ff1744; }
+    :root {
+      --accent:#a100ff; --accent-light:#c84aff; --bg:#0a0a0f;
+      --surface:#111118; --border:#2a2a3a; --text:#e8e8f0;
+      --muted:#7070a0; --approve:#00e676; --reject:#ff1744;
+    }
     * { box-sizing:border-box; margin:0; padding:0; }
     body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:40px 24px; }
+
     header { text-align:center; margin-bottom:40px; }
-    header h1 { font-family:'Rajdhani',sans-serif; font-size:2.8rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:linear-gradient(135deg,#fff 30%,var(--accent-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    header h1 {
+      font-family:'Rajdhani',sans-serif; font-size:2.8rem; font-weight:700;
+      letter-spacing:.08em; text-transform:uppercase;
+      background:linear-gradient(135deg,#fff 30%,var(--accent-light));
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    }
     header p { color:var(--muted); font-size:.85rem; margin-top:6px; letter-spacing:.04em; text-transform:uppercase; }
+
     .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:28px; max-width:760px; margin:0 auto 28px; }
-    .card h2 { font-family:'Rajdhani',sans-serif; font-size:1.2rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-bottom:20px; color:var(--accent-light); border-bottom:1px solid var(--border); padding-bottom:10px; }
+    .card h2 {
+      font-family:'Rajdhani',sans-serif; font-size:1.2rem; font-weight:600;
+      letter-spacing:.06em; text-transform:uppercase; margin-bottom:20px;
+      color:var(--accent-light); border-bottom:1px solid var(--border); padding-bottom:10px;
+    }
+
     .token-row { display:flex; gap:10px; align-items:flex-start; }
-    .token-row textarea { flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 12px; color:var(--text); font-family:monospace; font-size:.78rem; resize:vertical; min-height:60px; outline:none; }
+    .token-row textarea {
+      flex:1; background:var(--bg); border:1px solid var(--border); border-radius:8px;
+      padding:10px 12px; color:var(--text); font-family:monospace; font-size:.78rem;
+      resize:vertical; min-height:60px; outline:none;
+    }
     .token-row textarea:focus { border-color:var(--accent); }
     .token-row textarea::placeholder { color:var(--muted); }
-    .btn-refresh { white-space:nowrap; padding:10px 14px; background:transparent; border:1px solid var(--border); border-radius:8px; color:var(--muted); font-size:.8rem; cursor:pointer; transition:border-color .2s,color .2s; }
-    .btn-refresh:hover { border-color:var(--accent-light); color:var(--accent-light); }
-    .token-hint { font-size:.75rem; color:var(--muted); margin-top:8px; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-family:monospace; line-height:1.7; }
+
+    .token-hint {
+      font-size:.75rem; color:var(--muted); margin-top:8px;
+      background:var(--bg); border:1px solid var(--border); border-radius:6px;
+      padding:10px 14px; font-family:monospace; line-height:1.7;
+    }
     .token-hint b { color:var(--text); }
+
     .token-status { margin-top:8px; font-size:.78rem; padding:8px 12px; border-radius:6px; display:none; }
-    .token-status.set { display:block; background:#0a2a0a; border:1px solid var(--approve); color:var(--approve); }
-    .token-status.empty { display:block; background:#2a0a0f; border:1px solid var(--reject); color:var(--reject); }
+    .token-status.set   { display:block; background:#0a2a0a; border:1px solid var(--approve); color:var(--approve); }
+    .token-status.empty { display:block; background:#2a0a0f; border:1px solid var(--reject);  color:var(--reject); }
+
     .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     .form-group { display:flex; flex-direction:column; gap:6px; }
     .form-group.full { grid-column:1/-1; }
+
     label { font-size:.75rem; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
-    input { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.95rem; transition:border-color .2s; outline:none; }
+    input {
+      background:var(--bg); border:1px solid var(--border); border-radius:8px;
+      padding:10px 14px; color:var(--text); font-family:'DM Sans',sans-serif;
+      font-size:.95rem; transition:border-color .2s; outline:none;
+    }
     input:focus { border-color:var(--accent); }
-    .btn-submit { grid-column:1/-1; margin-top:6px; padding:12px 28px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
-    .btn-submit:hover { background:var(--accent-light); }
-    .btn-submit:disabled { background:var(--border); cursor:not-allowed; }
+
+    .btn-submit {
+      grid-column:1/-1; margin-top:6px; padding:12px 28px;
+      background:var(--accent); color:#fff; border:none; border-radius:8px;
+      font-family:'Rajdhani',sans-serif; font-size:1rem; font-weight:600;
+      letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:background .2s;
+    }
+    .btn-submit:hover     { background:var(--accent-light); }
+    .btn-submit:disabled  { background:var(--border); cursor:not-allowed; }
+
     #status-banner { display:none; max-width:760px; margin:0 auto 16px; padding:12px 18px; border-radius:8px; font-size:.85rem; }
     #status-banner.loading { display:block; background:#1a1a30; border:1px solid var(--accent); color:var(--accent-light); }
-    #status-banner.error { display:block; background:#2a0a0f; border:1px solid var(--reject); color:var(--reject); white-space:pre-wrap; word-break:break-all; font-family:monospace; font-size:.78rem; }
+    #status-banner.error   { display:block; background:#2a0a0f; border:1px solid var(--reject); color:var(--reject); white-space:pre-wrap; word-break:break-all; font-family:monospace; font-size:.78rem; }
+
     #candidates-section { max-width:760px; margin:0 auto; }
-    #candidates-section h2 { font-family:'Rajdhani',sans-serif; font-size:1.3rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-bottom:16px; color:var(--accent-light); }
-    .candidate-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:22px; margin-bottom:14px; display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start; }
+    #candidates-section h2 {
+      font-family:'Rajdhani',sans-serif; font-size:1.3rem; font-weight:600;
+      letter-spacing:.06em; text-transform:uppercase; margin-bottom:16px; color:var(--accent-light);
+    }
+
+    .candidate-card {
+      background:var(--surface); border:1px solid var(--border); border-radius:12px;
+      padding:22px; margin-bottom:14px; display:grid; grid-template-columns:1fr auto;
+      gap:16px; align-items:start;
+    }
     .candidate-card.approved { border-color:var(--approve); }
     .candidate-card.rejected { border-color:var(--reject); opacity:.6; }
-    .candidate-name { font-family:'Rajdhani',sans-serif; font-size:1.15rem; font-weight:700; }
+
+    .candidate-name  { font-family:'Rajdhani',sans-serif; font-size:1.15rem; font-weight:700; }
     .candidate-email { color:var(--muted); font-size:.82rem; margin-top:2px; }
-    .candidate-meta { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .candidate-meta  { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
     .meta-tag { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:3px 9px; font-size:.75rem; color:var(--muted); }
     .meta-tag span { color:var(--text); font-weight:500; }
-    .score-badge { font-family:'Rajdhani',sans-serif; font-size:1.7rem; font-weight:700; color:var(--accent-light); text-align:right; }
-    .score-label { font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-align:right; }
+
+    .score-badge  { font-family:'Rajdhani',sans-serif; font-size:1.7rem; font-weight:700; color:var(--accent-light); text-align:right; }
+    .score-label  { font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-align:right; }
+
     .action-btns { display:flex; gap:8px; margin-top:10px; }
-    .btn-approve,.btn-reject { padding:6px 16px; border:none; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:.88rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+    .btn-approve,.btn-reject {
+      padding:6px 16px; border:none; border-radius:6px;
+      font-family:'Rajdhani',sans-serif; font-size:.88rem; font-weight:600;
+      letter-spacing:.06em; text-transform:uppercase; cursor:pointer;
+    }
     .btn-approve { background:var(--approve); color:#000; }
     .btn-reject  { background:var(--reject);  color:#fff; }
-    .decision-badge { display:inline-block; margin-top:8px; padding:4px 12px; border-radius:5px; font-size:.78rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+
+    .decision-badge {
+      display:inline-block; margin-top:8px; padding:4px 12px; border-radius:5px;
+      font-size:.78rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+    }
     .decision-badge.approved { background:var(--approve); color:#000; }
     .decision-badge.rejected { background:var(--reject);  color:#fff; }
-    @media(max-width:600px){ .form-grid{grid-template-columns:1fr;} header h1{font-size:2rem;} .token-row{flex-direction:column;} }
+
+    @media(max-width:600px) {
+      .form-grid { grid-template-columns:1fr; }
+      header h1  { font-size:2rem; }
+      .token-row { flex-direction:column; }
+    }
   </style>
 </head>
 <body>
@@ -66,11 +128,13 @@
   <p>AI-Powered Candidate Shortlisting &amp; Approval Workflow</p>
 </header>
 
-<!-- ── STEP 1: Token ──────────────────────────────────────────────── -->
+<!-- ── STEP 1: Token ── -->
 <div class="card">
   <h2>Step 1 — Azure Bearer Token</h2>
   <div class="token-row">
-    <textarea id="token-input" placeholder="Paste Bearer token here — get it from Azure Cloud Shell:&#10;az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv" oninput="checkToken()"></textarea>
+    <textarea id="token-input"
+      placeholder="Paste Bearer token here — get it from Azure Cloud Shell:&#10;az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv"
+      oninput="checkToken()"></textarea>
   </div>
   <div id="token-status" class="token-status empty">⚠ No token — paste your Bearer token above</div>
   <div class="token-hint">
@@ -80,7 +144,7 @@
   </div>
 </div>
 
-<!-- ── STEP 2: Job Profile ────────────────────────────────────────── -->
+<!-- ── STEP 2: Job Profile ── -->
 <div class="card">
   <h2>Step 2 — Job Profile</h2>
   <div class="form-grid">
@@ -112,39 +176,45 @@
 </div>
 
 <script>
-  const ENDPOINT    = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon";
-  const AGENT_NAME  = "AccentureHiringAgent";
-  const AGENT_VER   = "5";
+  // ── Config ──────────────────────────────────────────────────────────
+  const ENDPOINT   = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon";
+  const AGENT_NAME = "AccentureHiringAgent";
+  const AGENT_VER  = "5";
   const API_VERSION = "2025-11-15-preview";
 
-  const AGENT_URL = `${ENDPOINT}/openai/v1/responses?api-version=${API_VERSION}`;
+  // ✅ FIX: No ?api-version= in the URL — it goes in the request header instead
+  const AGENT_URL = `${ENDPOINT}/openai/v1/responses`;
 
+  // ── Token check ─────────────────────────────────────────────────────
   function checkToken() {
-    const token = document.getElementById('token-input').value.trim();
+    const token  = document.getElementById('token-input').value.trim();
     const status = document.getElementById('token-status');
     if (token.length > 20) {
-      status.className = 'token-status set';
+      status.className   = 'token-status set';
       status.textContent = '✓ Token added — ready to search';
     } else {
-      status.className = 'token-status empty';
+      status.className   = 'token-status empty';
       status.textContent = '⚠ No token — paste your Bearer token above';
     }
   }
 
+  // ── Submit ───────────────────────────────────────────────────────────
   async function submitJob() {
-    if (!document.getElementById('token-input').value.trim()) {
-      showStatus('error', '❌ Please paste your Bearer token in Step 1 first.');
+    const token = document.getElementById('token-input').value.trim();
+    if (!token) { showStatus('error', '❌ Please paste your Bearer token in Step 1 first.'); return; }
+
+    const role   = document.getElementById('job_role').value.trim();
+    const desc   = document.getElementById('job_description').value.trim();
+    const skills = document.getElementById('required_skills').value.trim();
+    const exp    = document.getElementById('min_experience').value.trim();
+
+    if (!role || !desc || !skills || !exp) {
+      showStatus('error', '❌ Please fill in all job profile fields.');
       return;
     }
-    const role  = document.getElementById('job_role').value.trim();
-    const desc  = document.getElementById('job_description').value.trim();
-    const skills = document.getElementById('required_skills').value.trim();
-    const exp   = document.getElementById('min_experience').value.trim();
-
-    if (!role || !desc || !skills || !exp) { showStatus('error', '❌ Please fill in all job profile fields.'); return; }
 
     const btn = document.querySelector('.btn-submit');
-    btn.disabled = true;
+    btn.disabled    = true;
     btn.textContent = 'Searching…';
     showStatus('loading', '⟳ Querying agent with AI Search grounding…');
     document.getElementById('candidates-section').style.display = 'none';
@@ -166,12 +236,12 @@ Minimum Experience: ${exp} years`;
     };
 
     try {
-      const token = document.getElementById('token-input').value.trim();
       const res = await fetch(AGENT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'api-version': API_VERSION      // ✅ FIX: version in header, not URL
         },
         body: JSON.stringify(payload)
       });
@@ -179,12 +249,14 @@ Minimum Experience: ${exp} years`;
       const rawText = await res.text();
       console.log(`HTTP ${res.status}`, rawText);
 
-      if (res.status === 401) throw new Error('Token expired or invalid.\n\nRe-run in Azure Cloud Shell: az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv');
+      if (res.status === 400) throw new Error(`Bad Request (400) — check agent name/version or payload shape.\n\n${rawText}`);
+      if (res.status === 401) throw new Error('Token expired or invalid.\n\nRe-run in Azure Cloud Shell:\naz account get-access-token --resource https://ai.azure.com --query accessToken -o tsv');
       if (res.status === 403) throw new Error('Access denied (403). Make sure your Azure account has the "Azure AI User" role on the Foundry project.');
       if (!res.ok) throw new Error(`HTTP ${res.status}\n\n${rawText}`);
 
       const data = JSON.parse(rawText);
 
+      // Extract text from response
       let replyText = '';
       if (typeof data.output_text === 'string') {
         replyText = data.output_text;
@@ -196,6 +268,7 @@ Minimum Experience: ${exp} years`;
           .join('');
       }
 
+      // Strip markdown fences and parse JSON array
       replyText = replyText.replace(/```json|```/g, '').trim();
       const match = replyText.match(/\[[\s\S]*\]/);
       if (!match) throw new Error('Agent did not return a JSON array.\n\nRaw response:\n' + replyText.slice(0, 600));
@@ -207,11 +280,12 @@ Minimum Experience: ${exp} years`;
       console.error(err);
       showStatus('error', `❌ ${err.message}`);
     } finally {
-      btn.disabled = false;
+      btn.disabled    = false;
       btn.textContent = 'Find Candidates →';
     }
   }
 
+  // ── Render ───────────────────────────────────────────────────────────
   function renderCandidates(candidates) {
     const container = document.getElementById('candidates');
     const section   = document.getElementById('candidates-section');
@@ -252,12 +326,14 @@ Minimum Experience: ${exp} years`;
     section.style.display = 'block';
   }
 
+  // ── Approve / Reject ─────────────────────────────────────────────────
   function decide(id, status) {
     document.getElementById(`card-${id}`).classList.add(status);
     document.getElementById(`actions-${id}`).innerHTML =
       `<span class="decision-badge ${status}">${status}</span>`;
   }
 
+  // ── Helpers ───────────────────────────────────────────────────────────
   function showStatus(type, msg) {
     const el = document.getElementById('status-banner');
     el.className = type; el.textContent = msg; el.style.display = 'block';
