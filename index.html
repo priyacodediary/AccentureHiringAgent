@@ -36,49 +36,54 @@
           role: "user",
           content: [{
             type: "text",
-            text: `Search and shortlist top 10 candidates for this role:
+            text: `Return ONLY a valid JSON array of candidates.
+                   Each candidate must have: id, name, email, role, match_score, skills, experience, location.
+                   Do not include any extra text.
                    Job Role: ${formData.get("job_role")}
                    Description: ${formData.get("job_description")}
                    Required Skills: ${formData.get("required_skills")}
-                   Min Experience: ${formData.get("min_experience")} years
-                   Return a JSON array of candidates with fields:
-                   id, name, email, role, match_score, skills, experience, location`
+                   Min Experience: ${formData.get("min_experience")} years`
           }]
         }]
       };
 
-      const res = await fetch(agentUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-      const data = await res.json();
+      try {
+        const res = await fetch(agentUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        console.log("Agent raw response:", data);
 
-    // Parse agent reply safely
-console.log("Agent raw response:", data); // <-- See full structure in console
+        let candidates = [];
+        try {
+          const output = data.output || [];
+          const replyText = output[0]?.content?.[0]?.text;
 
-let candidates = [];
-try {
-  const output = data.output || [];
-  const replyText = output[0]?.content?.[0]?.text;
+          if (replyText) {
+            candidates = JSON.parse(replyText);
+          } else {
+            alert("Agent response did not contain text. Check console for raw response.");
+          }
+        } catch (err) {
+          alert("Agent did not return valid JSON: " + err.message);
+        }
 
-  if (replyText) {
-    // Try parsing JSON
-    candidates = JSON.parse(replyText);
-  } else {
-    alert("Agent response did not contain text. Raw response logged in console.");
-  }
-} catch (err) {
-  alert("Agent did not return valid JSON: " + err.message);
-}
-renderCandidates(candidates);
-
-
+        renderCandidates(candidates);
+      } catch (err) {
+        alert("Error calling agent: " + err.message);
+      }
+    });
 
     // Render candidates with Approve/Reject buttons
     function renderCandidates(candidates) {
       const container = document.getElementById("candidates");
       container.innerHTML = "";
+      if (!Array.isArray(candidates) || candidates.length === 0) {
+        container.innerHTML = "<p>No candidates returned.</p>";
+        return;
+      }
       candidates.forEach(c => {
         const div = document.createElement("div");
         div.className = "candidate";
