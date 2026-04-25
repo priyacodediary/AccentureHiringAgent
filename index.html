@@ -1,533 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>HR Recruitment Portal</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&family=Lora:ital@0;1&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg:#0d0f14;
-  --surface:#141720;
-  --surface2:#1c2030;
-  --border:rgba(255,255,255,0.07);
-  --border2:rgba(255,255,255,0.13);
-  --text:#e8eaf0;
-  --text2:#8b8fa8;
-  --text3:#555870;
-  --accent:#4f8aff;
-  --accent-dim:rgba(79,138,255,0.12);
-  --green:#34c97a;
-  --green-dim:rgba(52,201,122,0.12);
-  --red:#ff5f5f;
-  --red-dim:rgba(255,95,95,0.1);
-  --amber:#f5a623;
-  --amber-dim:rgba(245,166,35,0.1);
-  --radius:10px;
-}
-body{font-family:'Sora',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
-/* ── Layout ── */
-.app{display:grid;grid-template-columns:320px 1fr;min-height:100vh}
-.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:28px 24px;display:flex;flex-direction:column;gap:28px}
-.main{padding:32px 36px;overflow-y:auto}
-
-/* ── Logo / title ── */
-.logo{display:flex;align-items:center;gap:10px}
-.logo-dot{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center}
-.logo-dot svg{width:16px;height:16px;fill:#fff}
-.logo-text{font-size:15px;font-weight:600;letter-spacing:-0.2px}
-.logo-sub{font-size:11px;color:var(--text2);font-weight:300}
-
-/* ── Config panel ── */
-.config-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);font-weight:500;margin-bottom:6px}
-.config-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11px;color:var(--text2);font-family:'Sora',sans-serif}
-.config-input:focus{outline:1px solid var(--accent);color:var(--text)}
-.config-hint{font-size:10px;color:var(--text3);margin-top:4px;line-height:1.5}
-
-/* ── Steps sidebar ── */
-.steps{display:flex;flex-direction:column;gap:4px;margin-top:auto}
-.step{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;font-size:12px;color:var(--text3);transition:all 0.2s}
-.step.active{background:var(--accent-dim);color:var(--accent)}
-.step.done{color:var(--green)}
-.step-num{width:20px;height:20px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
-.step.done .step-num{background:var(--green);border-color:var(--green);color:#000}
-
-/* ── Main area ── */
-.panel{display:none}
-.panel.active{display:block}
-
-/* ── Page header ── */
-.page-header{margin-bottom:28px}
-.page-title{font-size:22px;font-weight:600;letter-spacing:-0.4px}
-.page-sub{font-size:13px;color:var(--text2);margin-top:4px;font-weight:300}
-
-/* ── Form ── */
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.form-group{display:flex;flex-direction:column;gap:6px}
-.form-group.full{grid-column:1/-1}
-.label{font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);font-weight:500}
-.input{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;font-size:13px;color:var(--text);font-family:'Sora',sans-serif;width:100%;transition:border-color 0.15s}
-.input:focus{outline:none;border-color:var(--accent)}
-.input::placeholder{color:var(--text3)}
-textarea.input{resize:vertical;min-height:90px;line-height:1.6}
-
-/* ── Buttons ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 22px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;border:none;font-family:'Sora',sans-serif;transition:all 0.15s}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover:not(:disabled){background:#3a75f0}
-.btn-primary:disabled{opacity:0.35;cursor:not-allowed}
-.btn-ghost{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
-.btn-ghost:hover{border-color:var(--border2);color:var(--text)}
-.btn-approve{background:var(--green-dim);color:var(--green);border:1px solid rgba(52,201,122,0.22)}
-.btn-approve:hover{background:rgba(52,201,122,0.2)}
-.btn-reject{background:var(--red-dim);color:var(--red);border:1px solid rgba(255,95,95,0.2)}
-.btn-reject:hover{background:rgba(255,95,95,0.18)}
-.btn-submit-final{background:var(--green);color:#000;font-weight:600;padding:12px 28px}
-.btn-submit-final:hover:not(:disabled){background:#2ab568}
-.btn-submit-final:disabled{opacity:0.35;cursor:not-allowed}
-
-/* ── Loading state ── */
-.loading-state{text-align:center;padding:60px 20px}
-.spinner-ring{width:44px;height:44px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-title{font-size:15px;font-weight:500;margin-bottom:6px}
-.loading-sub{font-size:12px;color:var(--text2);line-height:1.6}
-
-/* ── Candidate cards ── */
-.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-.results-meta{font-size:12px;color:var(--text2)}
-.candidates{display:flex;flex-direction:column;gap:10px}
-
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;transition:border-color 0.2s;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;transition:background 0.2s}
-.card.approved::before{background:var(--green)}
-.card.rejected::before{background:var(--red)}
-.card:not(.approved):not(.rejected):hover{border-color:var(--border2)}
-
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:12px}
-.candidate-meta{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
-.avatar{width:40px;height:40px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Lora',serif;font-size:14px;color:var(--text2);flex-shrink:0;font-style:italic}
-.cname{font-size:14px;font-weight:500}
-.crole{font-size:11px;color:var(--text2);margin-top:2px}
-.score-badge{padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;background:var(--accent-dim);color:var(--accent);border:1px solid rgba(79,138,255,0.2);flex-shrink:0}
-
-.card-details{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px}
-.detail .dlabel{font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--text3);font-weight:500}
-.detail .dval{font-size:12px;color:var(--text2);margin-top:2px}
-
-.card-actions{display:flex;gap:8px;align-items:center}
-.status-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500}
-.status-pill.approved{background:var(--green-dim);color:var(--green)}
-.status-pill.rejected{background:var(--red-dim);color:var(--red)}
-.btn-undo{background:none;border:1px solid var(--border2);color:var(--text3);font-size:11px;padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Sora',sans-serif}
-.btn-undo:hover{color:var(--text);border-color:var(--border2)}
-
-/* ── Approval bar ── */
-.approval-bar{margin-top:20px;padding:16px 20px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.approval-info{font-size:12px;color:var(--text2)}
-.approval-info strong{color:var(--text)}
-
-/* ── Success panel ── */
-.success-box{text-align:center;padding:60px 24px}
-.success-icon{width:56px;height:56px;border-radius:50%;background:var(--green-dim);border:1px solid rgba(52,201,122,0.3);display:flex;align-items:center;justify-content:center;margin:0 auto 20px}
-.success-title{font-size:20px;font-weight:600;margin-bottom:8px}
-.success-sub{font-size:13px;color:var(--text2);line-height:1.7;max-width:400px;margin:0 auto}
-
-/* ── Toast ── */
-.toast{position:fixed;bottom:20px;right:20px;background:var(--surface2);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:11px 16px;font-size:12px;opacity:0;transform:translateY(6px);transition:all 0.22s;pointer-events:none;z-index:999;max-width:320px}
-.toast.show{opacity:1;transform:translateY(0)}
-.toast.ok{border-color:rgba(52,201,122,0.4);color:var(--green)}
-.toast.err{border-color:rgba(255,95,95,0.4);color:var(--red)}
-
-@media(max-width:700px){
-  .app{grid-template-columns:1fr}
-  .sidebar{display:none}
-  .main{padding:20px 16px}
-  .form-grid{grid-template-columns:1fr}
-}
-</style>
+  <meta charset="UTF-8">
+  <title>Accenture Hiring Agent</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .candidate { border: 1px solid #ccc; padding: 10px; margin: 10px; }
+    button { margin: 5px; }
+  </style>
 </head>
 <body>
-<div class="app">
+  <h1>HR Approval Workflow</h1>
 
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar">
-    <div>
-      <div class="logo">
-        <div class="logo-dot">
-          <svg viewBox="0 0 16 16"><path d="M8 1L15 5v6L8 15 1 11V5z"/></svg>
-        </div>
-        <div>
-          <div class="logo-text">RecruitAI</div>
-          <div class="logo-sub">HR Approval Portal</div>
-        </div>
-      </div>
-    </div>
+  <!-- Job Profile Form -->
+  <form id="jobForm">
+    <label>Job Role: <input type="text" name="job_role" required></label><br>
+    <label>Description: <input type="text" name="job_description" required></label><br>
+    <label>Required Skills: <input type="text" name="required_skills" required></label><br>
+    <label>Min Experience (years): <input type="number" name="min_experience" required></label><br>
+    <button type="submit">Submit Job Profile</button>
+  </form>
 
-    <div>
-      <div class="config-label">Azure Function URL</div>
-      <input class="config-input" id="func-url" type="text"
-        placeholder="https://your-func.azurewebsites.net/api"
-        value=""/>
-      <div class="config-hint">Base URL of your Azure Function App (no trailing slash)</div>
-    </div>
+  <h2>Shortlisted Candidates</h2>
+  <div id="candidates"></div>
 
-    <div>
-      <div class="config-label">Logic App Trigger URL</div>
-      <input class="config-input" id="logic-url" type="text"
-        placeholder="https://prod-xx.logic.azure.com:443/workflows/..."
-        value=""/>
-      <div class="config-hint">Your existing Logic App HTTP trigger URL</div>
-    </div>
+  <script>
+    const agentUrl = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/agents/AccentureHiringAgent/protocols/openai/v1/responses";
 
-    <div class="steps" id="steps">
-      <div class="step active" id="step-1">
-        <div class="step-num">1</div><span>Submit job profile</span>
-      </div>
-      <div class="step" id="step-2">
-        <div class="step-num">2</div><span>Agent searches resumes</span>
-      </div>
-      <div class="step" id="step-3">
-        <div class="step-num">3</div><span>HR reviews shortlist</span>
-      </div>
-      <div class="step" id="step-4">
-        <div class="step-num">4</div><span>Send to recruiter</span>
-      </div>
-    </div>
-  </aside>
+    // Submit job profile to agent
+    document.getElementById("jobForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const payload = {
+        input: [{
+          role: "user",
+          content: [{
+            type: "text",
+            text: `Search and shortlist top 10 candidates for this role:
+                   Job Role: ${formData.get("job_role")}
+                   Description: ${formData.get("job_description")}
+                   Required Skills: ${formData.get("required_skills")}
+                   Min Experience: ${formData.get("min_experience")} years
+                   Return a JSON array of candidates with fields:
+                   id, name, email, role, match_score, skills, experience, location`
+          }]
+        }]
+      };
 
-  <!-- ── Main ── -->
-  <main class="main">
+      const res = await fetch(agentUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
 
-    <!-- Panel 1: Job profile form -->
-    <div class="panel active" id="panel-form">
-      <div class="page-header">
-        <div class="page-title">Post a job for AI screening</div>
-        <div class="page-sub">Fill in the role details — the AI agent will search and shortlist from 2,000 resumes</div>
-      </div>
-      <div class="form-grid">
-        <div class="form-group">
-          <label class="label">Job title</label>
-          <input class="input" id="f-title" placeholder="e.g. Senior ML Engineer" type="text"/>
-        </div>
-        <div class="form-group">
-          <label class="label">Department</label>
-          <input class="input" id="f-dept" placeholder="e.g. AI &amp; Data Science" type="text"/>
-        </div>
-        <div class="form-group full">
-          <label class="label">Job description</label>
-          <textarea class="input" id="f-desc" placeholder="Describe the role, responsibilities, team context..."></textarea>
-        </div>
-        <div class="form-group full">
-          <label class="label">Required skills</label>
-          <input class="input" id="f-skills" placeholder="e.g. Python, PyTorch, MLOps, Azure ML, LLMs" type="text"/>
-        </div>
-        <div class="form-group">
-          <label class="label">Min experience (years)</label>
-          <input class="input" id="f-exp" placeholder="e.g. 4" type="number" min="0"/>
-        </div>
-        <div class="form-group">
-          <label class="label">Location preference</label>
-          <input class="input" id="f-location" placeholder="e.g. Bangalore / Remote" type="text"/>
-        </div>
-        <div class="form-group full" style="margin-top:8px">
-          <button class="btn btn-primary" id="btn-search" onclick="submitJobProfile()">
-            Search resumes with AI agent
-          </button>
-        </div>
-      </div>
-    </div>
+      // Parse agent reply (assumes JSON array in first message)
+      let candidates = [];
+      try {
+        const reply = data.output[0].content[0].text;
+        candidates = JSON.parse(reply);
+      } catch (err) {
+        alert("Error parsing agent response: " + err);
+      }
 
-    <!-- Panel 2: Loading / agent running -->
-    <div class="panel" id="panel-loading">
-      <div class="loading-state">
-        <div class="spinner-ring"></div>
-        <div class="loading-title" id="loading-title">Agent is searching resumes…</div>
-        <div class="loading-sub" id="loading-sub">
-          AI Foundry agent is parsing and scoring candidates<br/>
-          against your job profile. This usually takes 15–30 seconds.
-        </div>
-      </div>
-    </div>
-
-    <!-- Panel 3: Shortlist results -->
-    <div class="panel" id="panel-results">
-      <div class="results-header">
-        <div class="page-header" style="margin-bottom:0">
-          <div class="page-title">Shortlisted candidates</div>
-          <div class="page-sub" id="results-sub">AI agent returned the top matches for your role</div>
-        </div>
-        <button class="btn btn-ghost" onclick="goBack()" style="flex-shrink:0">New search</button>
-      </div>
-      <div class="candidates" id="candidate-list"></div>
-      <div class="approval-bar">
-        <div class="approval-info">
-          <strong id="approved-count">0 approved</strong>
-          &nbsp;·&nbsp; click approve/reject per candidate, then send to recruiter
-        </div>
-        <button class="btn btn-submit-final" id="btn-send" onclick="sendToLogicApp()" disabled>
-          Approve &amp; send to recruiter
-        </button>
-      </div>
-    </div>
-
-    <!-- Panel 4: Success -->
-    <div class="panel" id="panel-success">
-      <div class="success-box">
-        <div class="success-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#34c97a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </div>
-        <div class="success-title">Recruiter notified</div>
-        <div class="success-sub" id="success-msg">
-          Approved candidates have been sent to the recruiter via your Logic App.
-        </div>
-        <button class="btn btn-ghost" onclick="goBack()" style="margin-top:24px">Start new search</button>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-// ─── State ───────────────────────────────────────────────
-let candidates = [];
-let decisions  = {};
-let currentJobRole = '';
-
-// ─── Helpers ─────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-const FUNC_URL  = () => ($('func-url').value  || '').replace(/\/$/, '');
-const LOGIC_URL = () =>  $('logic-url').value || '';
-
-function showPanel(id) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  $(id).classList.add('active');
-}
-
-function setStep(n) {
-  for (let i = 1; i <= 4; i++) {
-    const el = $('step-' + i);
-    el.classList.remove('active', 'done');
-    if (i < n)  el.classList.add('done');
-    if (i === n) el.classList.add('active');
-  }
-}
-
-function toast(msg, type = '') {
-  const t = $('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(t._t);
-  t._t = setTimeout(() => { t.className = 'toast'; }, 4500);
-}
-
-// ─── Step 1 → Submit job profile ──────────────────────────
-async function submitJobProfile() {
-  const title  = $('f-title').value.trim();
-  const desc   = $('f-desc').value.trim();
-  const skills = $('f-skills').value.trim();
-  if (!title || !desc || !skills) {
-    toast('Please fill in job title, description and required skills.', 'err');
-    return;
-  }
-
-  currentJobRole = title;
-  decisions  = {};
-  candidates = [];
-
-  showPanel('panel-loading');
-  setStep(2);
-  $('loading-title').textContent = 'Agent is searching resumes…';
-
-  const payload = {
-    job_role:         title,
-    department:       $('f-dept').value.trim(),
-    job_description:  desc,
-    required_skills:  skills,
-    min_experience:   $('f-exp').value || '0',
-    location:         $('f-location').value.trim()
-  };
-
-  // ── If no Function URL → use mock data ──────────────────
-  if (!FUNC_URL()) {
-    await new Promise(r => setTimeout(r, 2200));
-    candidates = mockCandidates(title);
-    showResults();
-    return;
-  }
-
-  try {
-    const res  = await fetch(`${FUNC_URL()}/search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      renderCandidates(candidates);
     });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    candidates = data.candidates || [];
-    showResults();
-  } catch (e) {
-    toast('Agent call failed: ' + e.message + '. Showing mock data.', 'err');
-    candidates = mockCandidates(title);
-    showResults();
-  }
-}
 
-// ─── Show results panel ───────────────────────────────────
-function showResults() {
-  $('results-sub').textContent =
-    `Agent found ${candidates.length} top matches for "${currentJobRole}"`;
-  renderCards();
-  showPanel('panel-results');
-  setStep(3);
-}
+    // Render candidates with Approve/Reject buttons
+    function renderCandidates(candidates) {
+      const container = document.getElementById("candidates");
+      container.innerHTML = "";
+      candidates.forEach(c => {
+        const div = document.createElement("div");
+        div.className = "candidate";
+        div.innerHTML = `
+          <strong>${c.name}</strong> (${c.role})<br>
+          Email: ${c.email}<br>
+          Skills: ${c.skills}<br>
+          Experience: ${c.experience} years<br>
+          Match Score: ${c.match_score}<br>
+          <button onclick="sendDecision('${c.id}','approve')">Approve</button>
+          <button onclick="sendDecision('${c.id}','reject')">Reject</button>
+        `;
+        container.appendChild(div);
+      });
+    }
 
-function renderCards() {
-  $('candidate-list').innerHTML = candidates.map(c => `
-    <div class="card" id="card-${c.id}">
-      <div class="card-top">
-        <div class="candidate-meta">
-          <div class="avatar">${initials(c.name)}</div>
-          <div>
-            <div class="cname">${c.name}</div>
-            <div class="crole">${c.role} · ${c.experience} exp</div>
-          </div>
-        </div>
-        <div class="score-badge">Match ${c.match_score}</div>
-      </div>
-      <div class="card-details">
-        <div class="detail">
-          <div class="dlabel">Skills</div>
-          <div class="dval">${c.skills}</div>
-        </div>
-        <div class="detail">
-          <div class="dlabel">Location</div>
-          <div class="dval">${c.location}</div>
-        </div>
-        <div class="detail">
-          <div class="dlabel">Email</div>
-          <div class="dval">${c.email}</div>
-        </div>
-      </div>
-      <div class="card-actions" id="actions-${c.id}">
-        <button class="btn btn-approve" onclick="decide(${c.id},'approve')">Approve</button>
-        <button class="btn btn-reject"  onclick="decide(${c.id},'reject')">Reject</button>
-      </div>
-    </div>
-  `).join('');
-  updateBar();
-}
-
-function initials(name) {
-  return name.split(' ').slice(0,2).map(w => w[0]).join('');
-}
-
-// ─── Approve / Reject ─────────────────────────────────────
-function decide(id, action) {
-  decisions[id] = action;
-  const card = $('card-' + id);
-  card.className = 'card ' + action;
-  $('actions-' + id).innerHTML = `
-    <span class="status-pill ${action}">${action === 'approve' ? 'Approved' : 'Rejected'}</span>
-    <button class="btn-undo" onclick="undecide(${id})">Undo</button>
-  `;
-  updateBar();
-}
-
-function undecide(id) {
-  delete decisions[id];
-  $('card-' + id).className = 'card';
-  $('actions-' + id).innerHTML = `
-    <button class="btn btn-approve" onclick="decide(${id},'approve')">Approve</button>
-    <button class="btn btn-reject"  onclick="decide(${id},'reject')">Reject</button>
-  `;
-  updateBar();
-}
-
-function updateBar() {
-  const approved = Object.values(decisions).filter(v => v === 'approve').length;
-  const rejected = Object.values(decisions).filter(v => v === 'reject').length;
-  $('approved-count').textContent = `${approved} approved · ${rejected} rejected`;
-  $('btn-send').disabled = approved === 0;
-}
-
-// ─── Send approved candidates to Logic App ────────────────
-async function sendToLogicApp() {
-  const approvedCandidates = candidates.filter(c => decisions[c.id] === 'approve');
-  if (!approvedCandidates.length) return;
-
-  $('btn-send').disabled    = true;
-  $('btn-send').textContent = 'Sending…';
-  setStep(4);
-
-  const payload = {
-    job_role:            currentJobRole,
-    reviewed_by:         'HR Portal',
-    timestamp:           new Date().toISOString(),
-    approved_candidates: approvedCandidates,
-    rejected_count:      candidates.filter(c => decisions[c.id] === 'reject').length
-  };
-
-  const logicUrl = LOGIC_URL();
-
-  if (!logicUrl) {
-    // Simulation
-    await new Promise(r => setTimeout(r, 1400));
-    showSuccess(approvedCandidates.length, true);
-    return;
-  }
-
-  try {
-    const res = await fetch(logicUrl, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload)
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    showSuccess(approvedCandidates.length, false);
-  } catch (e) {
-    toast('Logic App error: ' + e.message, 'err');
-    $('btn-send').disabled    = false;
-    $('btn-send').textContent = 'Approve & send to recruiter';
-    setStep(3);
-  }
-}
-
-function showSuccess(count, simulated) {
-  $('success-msg').textContent = simulated
-    ? `Simulated: ${count} candidate(s) approved. Add your Logic App URL in the sidebar to go live and trigger the recruiter email.`
-    : `${count} approved candidate(s) sent to the recruiter via Logic App. Emails are being triggered now.`;
-  showPanel('panel-success');
-}
-
-// ─── New search ───────────────────────────────────────────
-function goBack() {
-  decisions  = {};
-  candidates = [];
-  showPanel('panel-form');
-  setStep(1);
-  $('btn-send').textContent = 'Approve & send to recruiter';
-}
-
-// ─── Mock data (used when no Function URL set) ────────────
-function mockCandidates(role) {
-  return [
-    {id:1, name:'Priya Sharma',   role, email:'priya.sharma@email.com',   match_score:'94%', skills:'PyTorch, MLOps, Azure ML',       experience:'6 yrs', location:'Bangalore'},
-    {id:2, name:'Arjun Mehta',    role, email:'arjun.mehta@email.com',    match_score:'89%', skills:'TensorFlow, Python, NLP',         experience:'4 yrs', location:'Hyderabad'},
-    {id:3, name:'Sana Qureshi',   role, email:'sana.qureshi@email.com',   match_score:'86%', skills:'Scikit-learn, SQL, Azure ML',     experience:'5 yrs', location:'Mumbai'},
-    {id:4, name:'Rohan Das',      role, email:'rohan.das@email.com',      match_score:'82%', skills:'BERT, HuggingFace, Research',     experience:'3 yrs', location:'Pune'},
-    {id:5, name:'Nisha Verma',    role, email:'nisha.verma@email.com',    match_score:'79%', skills:'Computer Vision, ONNX, C++',     experience:'5 yrs', location:'Delhi'},
-    {id:6, name:'Karan Patel',    role, email:'karan.patel@email.com',    match_score:'76%', skills:'Python, Pandas, Databricks',     experience:'4 yrs', location:'Ahmedabad'},
-    {id:7, name:'Meera Iyer',     role, email:'meera.iyer@email.com',     match_score:'73%', skills:'R, Statistics, Power BI',        experience:'3 yrs', location:'Chennai'},
-  ];
-}
-</script>
+    // For now, just update UI with decision (no backend call)
+    function sendDecision(candidateId, status) {
+      alert(`Decision '${status}' recorded for candidate ${candidateId}`);
+    }
+  </script>
 </body>
 </html>
