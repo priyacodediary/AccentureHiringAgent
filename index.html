@@ -68,16 +68,15 @@
 
 <!-- ── STEP 1: Token ──────────────────────────────────────────────── -->
 <div class="card">
-  <h2>Step 1 — Azure Token</h2>
+  <h2>Step 1 — Azure Bearer Token</h2>
   <div class="token-row">
-    <textarea id="token-input" placeholder="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlUxc1g4WUZIUzdaNlZsN1ZITEl6VGVqYnZqMCIsImtpZCI6IlUxc1g4WUZIUzdaNlZsN1ZITEl6VGVqYnZqMCJ9.eyJhdWQiOiJodHRwczovL2FpLmF6dXJlLmNvbSIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzRlNzAwNWUxLTVjMDktNDY5YS04YmNkLTgwZmUyNDNmNTYzMC8iLCJpYXQiOjE3NzcxMDM0NzQsIm5iZiI6MTc3NzEwMzQ3NCwiZXhwIjoxNzc3MTA4MzYwLCJhY3IiOiIxIiwiYWlvIjoiQVpRQWEvOGJBQUFBTExmV0luUmY5dXNLQXNJcmxOOE5FRVdqdVdUYnU5ZWlzdExOcVBDMlgzQk5zeVlqdnphOUdXRFV3aEsyMHRVRkppaTY5K2hhV0VtdnlIRHlRWEJIdUNhRmI0N2FwdDJXQ0h1U21qYzc0eXFmVXVUUW5UMGQzbTNqNUpWN0JQZXpzelFmeHI5ZTdyeTRnb2hzMXNsZUNuZUZqZU4wZG5yVm9DZWFkTGFaQldIZHg4OThFSVVIUDlYakNHbjE3RWtsIiwiYWx0c2VjaWQiOiIxOmxpdmUuY29tOjAwMDM0MDAyQTY5REIzOTYiLCJhbXIiOlsicHdkIiwibWZhIl0sImFwcGlkIjoiYjY3N2MyOTAtY2Y0Yi00YThlLWE2MGUtOTFiYTY1MGE0YWJlIiwiYXBwaWRhY3IiOiIwIiwiZW1haWwiOiJwcmFubm95cmFpMDUyMkBnbWFpbC5jb20iLCJmYW1pbHlfbmFtZSI6IlJhaSIsImdpdmVuX25hbWUiOiJQcmFubm95IiwiZ3JvdXBzIjpbIjY1NzUwZjJhLTFkYmEtNDc1NS05ZDIwLTk1YjhmYWVmNzBmNyJdLCJpZHAiOiJsaXZlLmNvbSIsImlkdHlwIjoidXNlciIsImlwYWRkciI6IjI0MDU6MjAxOjYwMDg6MTgyZTpmOGE0OjZjZWU6NDc4ZDphYTlkIiwibmFtZSI6IlByYW5ub3kgUmFpIiwib2lkIjoiMTExY2M5NjItMTgzNC00YTVjLTg5ZjktZDgzMDI2ZTY0OGQ2IiwicHVpZCI6IjEwMDMyMDA1QzdFQkU2M0UiLCJyaCI6IjEuQVhBQTRRVndUZ2xjbWthTHpZRC1KRDlXTUY5dnBoamYyeGRNbmRjV05IRXFuTDRBQUdwd0FBLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInNpZCI6IjAwNDA5MzVhLWJkMjYtYzNjZC02ZWJjLTM4NzQ3YmNhMmNiNCIsInN1YiI6IkRkaDYxNnd5d0s2MGRqbTFYZkJtWGpKZGpUNmNrNjduQnljUl9VMG5wbWciLCJ0aWQiOiI0ZTcwMDVlMS01YzA5LTQ2OWEtOGJjZC04MGZlMjQzZjU2MzAiLCJ1bmlxdWVfbmFtZSI6ImxpdmUuY29tI3ByYW5ub3lyYWkwNTIyQGdtYWlsLmNvbSIsInV0aSI6IjM5TUpXcGY0QkVPYlJGUW1uaTBNQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfYWN0X2ZjdCI6IjMgNSIsInhtc19mdGQiOiJjMkJvUVAyRXFnekxmc3d4NU5Fam1LbU05WlFYYVBqSU5NT1JJMDVhOUI0QllYTnBZWE52ZFhSb1pXRnpkQzFrYzIxeiIsInhtc19pZHJlbCI6IjEgMjYiLCJ4bXNfc3ViX2ZjdCI6IjYgMyJ9.KPulr9PGFgxFzS7fMLmor1nuffa8coGOgzp-ptydoG5W16pli1SToJgIsIkmw9XQz0iTQrhI1F6uAMMRSljxhDnXo5h5lVOzLT6x54hA-1GLmuFC_gmGlCzTbBHTASRKcY8a_lnY4fED1n8qY18mRpuZYBjxxeDV6v3mY8Xv4_yZg39nUEvgqq-Mu8d9Usp1UazAXJpMN7oKvDVmCeGrnSY9kg-XDDPFeom9wO2UGzjFIdA1IB5CLTHTJTd74Lt9Kx6AGqBp-IBv_o8bZUkFQEjH-4XDvysn9lrTd9pxScWafcRrH8KajguKAktaLxiUSJMP8_TMDugIL7iRymeZlg" oninput="checkToken()"></textarea>
-    <button class="btn-refresh" onclick="showTokenHelp()">How to get token</button>
+    <textarea id="token-input" placeholder="Paste Bearer token here — get it from Azure Cloud Shell:&#10;az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv" oninput="checkToken()"></textarea>
   </div>
-  <div id="token-status" class="token-status empty">⚠ No token added — paste your Bearer token above before searching</div>
-  <div class="token-hint" id="token-hint">
-    Run this in Azure Cloud Shell (portal.azure.com → click &gt;_ icon) and paste the output above:<br>
+  <div id="token-status" class="token-status empty">⚠ No token — paste your Bearer token above</div>
+  <div class="token-hint">
+    Run in Azure Cloud Shell (portal.azure.com → click &gt;_ icon):<br>
     <b>az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv</b><br><br>
-    Token expires in ~60 min — re-run the command to refresh.
+    Token expires in ~60 min — re-run to refresh.
   </div>
 </div>
 
@@ -113,15 +112,12 @@
 </div>
 
 <script>
-  const RESOURCE   = "hackagentathon-resource";
-  const PROJECT    = "hackagentathon";
-  const AGENT_APP  = "AccentureHiringAgent";
+  const ENDPOINT    = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon";
+  const AGENT_NAME  = "AccentureHiringAgent";
+  const AGENT_VER   = "5";
   const API_VERSION = "2025-11-15-preview";
 
-  const AGENT_URL =
-    `https://${RESOURCE}.services.ai.azure.com/api/projects/${PROJECT}` +
-    `/applications/${AGENT_APP}/protocols/openai/v1/responses` +
-    `?api-version=${API_VERSION}`;
+  const AGENT_URL = `${ENDPOINT}/openai/responses?api-version=${API_VERSION}`;
 
   function checkToken() {
     const token = document.getElementById('token-input').value.trim();
@@ -131,22 +127,20 @@
       status.textContent = '✓ Token added — ready to search';
     } else {
       status.className = 'token-status empty';
-      status.textContent = '⚠ No token added — paste your Bearer token above before searching';
+      status.textContent = '⚠ No token — paste your Bearer token above';
     }
   }
 
-  function showTokenHelp() {
-    document.getElementById('token-hint').style.display = 'block';
-  }
-
   async function submitJob() {
-    const token = document.getElementById('token-input').value.trim();
+    if (!document.getElementById('token-input').value.trim()) {
+      showStatus('error', '❌ Please paste your Bearer token in Step 1 first.');
+      return;
+    }
     const role  = document.getElementById('job_role').value.trim();
     const desc  = document.getElementById('job_description').value.trim();
     const skills = document.getElementById('required_skills').value.trim();
     const exp   = document.getElementById('min_experience').value.trim();
 
-    if (!token) { showStatus('error', '❌ Please paste your Bearer token in Step 1 first.\n\nRun in Azure Cloud Shell: az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv'); return; }
     if (!role || !desc || !skills || !exp) { showStatus('error', '❌ Please fill in all job profile fields.'); return; }
 
     const btn = document.querySelector('.btn-submit');
@@ -155,18 +149,24 @@
     showStatus('loading', '⟳ Querying agent with AI Search grounding…');
     document.getElementById('candidates-section').style.display = 'none';
 
-    const payload = {
-      input: `Return ONLY a valid JSON array (no markdown, no extra text) of 5 shortlisted candidates.
+    const userMessage = `Return ONLY a valid JSON array (no markdown, no extra text) of 5 shortlisted candidates.
 Each object must have: id (string), name, email, role, match_score (number 0-100),
 skills (comma-separated string), experience (number, years), location (string).
 
 Job Role: ${role}
 Job Description: ${desc}
 Required Skills: ${skills}
-Minimum Experience: ${exp} years`
+Minimum Experience: ${exp} years`;
+
+    const payload = {
+      input: [{ role: "user", content: userMessage }],
+      extra_body: {
+        agent_reference: { name: AGENT_NAME, version: AGENT_VER, type: "agent_reference" }
+      }
     };
 
     try {
+      const token = document.getElementById('token-input').value.trim();
       const res = await fetch(AGENT_URL, {
         method: 'POST',
         headers: {
