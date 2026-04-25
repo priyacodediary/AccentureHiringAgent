@@ -201,12 +201,8 @@
   async function callAgent(token, userMessage) {
     const payload = {
       model: "gpt-4.1",
-      input: [{ role: "user", content: userMessage }],
-      agent_reference: {
-        name: AGENT_NAME,
-        version: AGENT_VER,
-        type: "agent_reference"
-      }
+      input: [{ role: "user", content: userMessage }]
+      // Agent is already identified in the URL path — no agent_reference needed
     };
 
     const res = await fetch(AGENT_URL, {
