@@ -182,7 +182,7 @@
   const API_VERSION = "2025-11-15-preview";
 
   // api-version MUST be a query param in the URL — NOT a header
-  const AGENT_URL = `https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/agents/AccentureHiringAgent/protocols/openai/v1/responses?api-version=${API_VERSION}`;
+  const AGENT_URL = `https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/openai/v1/responses?api-version=${API_VERSION}`;
 
   // ── Token check ─────────────────────────────────────────────────────
   function checkToken() {
@@ -201,8 +201,9 @@
   async function callAgent(token, userMessage) {
     const payload = {
       model: "gpt-4.1",
-      input: [{ role: "user", content: userMessage }]
-      // Agent is already identified in the URL path — no agent_reference needed
+      input: [{ role: "user", content: userMessage }],
+      // ✅ agent_reference goes in extra_body per Microsoft Foundry docs
+      ...( { "agent_reference": { "name": AGENT_NAME, "type": "agent_reference" } } )
     };
 
     const res = await fetch(AGENT_URL, {
