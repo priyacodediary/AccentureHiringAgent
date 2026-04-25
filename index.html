@@ -1,114 +1,231 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accenture Hiring Agent</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    .candidate { border: 1px solid #ccc; padding: 10px; margin: 10px; }
-    button { margin: 5px; }
+    :root { --accent:#a100ff; --accent-light:#c84aff; --bg:#0a0a0f; --surface:#111118; --border:#2a2a3a; --text:#e8e8f0; --muted:#7070a0; --approve:#00e676; --reject:#ff1744; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:40px 24px; }
+    header { text-align:center; margin-bottom:48px; }
+    header h1 { font-family:'Rajdhani',sans-serif; font-size:3rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:linear-gradient(135deg,#fff 30%,var(--accent-light)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    header p { color:var(--muted); font-size:.9rem; margin-top:6px; letter-spacing:.04em; text-transform:uppercase; }
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:32px; max-width:760px; margin:0 auto 40px; }
+    .card h2 { font-family:'Rajdhani',sans-serif; font-size:1.4rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-bottom:24px; color:var(--accent-light); border-bottom:1px solid var(--border); padding-bottom:12px; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .form-group { display:flex; flex-direction:column; gap:6px; }
+    .form-group.full { grid-column:1/-1; }
+    label { font-size:.78rem; font-weight:500; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    input { background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:10px 14px; color:var(--text); font-family:'DM Sans',sans-serif; font-size:.95rem; transition:border-color .2s; outline:none; }
+    input:focus { border-color:var(--accent); }
+    .btn-submit { grid-column:1/-1; margin-top:8px; padding:13px 28px; background:var(--accent); color:#fff; border:none; border-radius:8px; font-family:'Rajdhani',sans-serif; font-size:1.05rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:background .2s; }
+    .btn-submit:hover { background:var(--accent-light); }
+    .btn-submit:disabled { background:var(--border); cursor:not-allowed; }
+    #status-banner { display:none; max-width:760px; margin:0 auto 20px; padding:12px 20px; border-radius:8px; font-size:.9rem; font-weight:500; }
+    #status-banner.loading { display:block; background:#1a1a30; border:1px solid var(--accent); color:var(--accent-light); }
+    #status-banner.error { display:block; background:#2a0a0f; border:1px solid var(--reject); color:var(--reject); white-space:pre-wrap; word-break:break-all; }
+    #candidates-section { max-width:760px; margin:0 auto; }
+    #candidates-section h2 { font-family:'Rajdhani',sans-serif; font-size:1.4rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-bottom:20px; color:var(--accent-light); }
+    .candidate-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; margin-bottom:16px; display:grid; grid-template-columns:1fr auto; gap:16px; align-items:start; }
+    .candidate-card.approved { border-color:var(--approve); }
+    .candidate-card.rejected { border-color:var(--reject); opacity:.6; }
+    .candidate-name { font-family:'Rajdhani',sans-serif; font-size:1.2rem; font-weight:700; }
+    .candidate-role { color:var(--muted); font-size:.85rem; margin-top:2px; }
+    .candidate-meta { display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+    .meta-tag { background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:4px 10px; font-size:.78rem; color:var(--muted); }
+    .meta-tag span { color:var(--text); font-weight:500; }
+    .score-badge { font-family:'Rajdhani',sans-serif; font-size:1.8rem; font-weight:700; color:var(--accent-light); text-align:right; }
+    .score-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); text-align:right; }
+    .action-btns { display:flex; gap:8px; margin-top:12px; }
+    .btn-approve,.btn-reject { padding:7px 18px; border:none; border-radius:6px; font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; }
+    .btn-approve { background:var(--approve); color:#000; }
+    .btn-reject  { background:var(--reject);  color:#fff; }
+    .decision-badge { display:inline-block; margin-top:8px; padding:4px 12px; border-radius:5px; font-size:.8rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+    .decision-badge.approved { background:var(--approve); color:#000; }
+    .decision-badge.rejected { background:var(--reject);  color:#fff; }
+    @media(max-width:600px){ .form-grid{grid-template-columns:1fr;} header h1{font-size:2rem;} }
   </style>
 </head>
 <body>
-  <h1>HR Approval Workflow</h1>
 
-  <!-- Job Profile Form -->
-  <form id="jobForm">
-    <label>Job Role: <input type="text" name="job_role" required></label><br>
-    <label>Description: <input type="text" name="job_description" required></label><br>
-    <label>Required Skills: <input type="text" name="required_skills" required></label><br>
-    <label>Min Experience (years): <input type="number" name="min_experience" required></label><br>
-    <button type="submit">Submit Job Profile</button>
-  </form>
+<header>
+  <h1>Accenture Hiring Agent</h1>
+  <p>AI-Powered Candidate Shortlisting &amp; Approval Workflow</p>
+</header>
 
+<div class="card">
+  <h2>Job Profile</h2>
+  <div class="form-grid">
+    <div class="form-group">
+      <label>Job Role</label>
+      <input type="text" id="job_role" placeholder="e.g. Data Engineer">
+    </div>
+    <div class="form-group">
+      <label>Min Experience (years)</label>
+      <input type="number" id="min_experience" placeholder="e.g. 2" min="0">
+    </div>
+    <div class="form-group full">
+      <label>Job Description</label>
+      <input type="text" id="job_description" placeholder="Brief description of the role">
+    </div>
+    <div class="form-group full">
+      <label>Required Skills</label>
+      <input type="text" id="required_skills" placeholder="e.g. Python, Airflow, Spark">
+    </div>
+    <button class="btn-submit" onclick="submitJob()">Find Candidates →</button>
+  </div>
+</div>
+
+<div id="status-banner"></div>
+
+<div id="candidates-section" style="display:none">
   <h2>Shortlisted Candidates</h2>
   <div id="candidates"></div>
+</div>
 
-  <script>
-    const agentUrl = "https://hackagentathon-resource.services.ai.azure.com/api/projects/hackagentathon/agents/AccentureHiringAgent/protocols/openai/v1/responses";
-";
+<script>
+  // ── CONFIG ────────────────────────────────────────────────────────────────
+  const RESOURCE   = "hackagentathon-resource";
+  const PROJECT    = "hackagentathon";
+  const AGENT_NAME = "AccentureHiringAgent";
+  const API_KEY    = "40faJDvzNVYJkJw91JH0c5rWyCEowDoWXrnst3NzKOdqIoK89MxfJQQJ99CDACHYHv6XJ3w3AAAAACOGxTiA";
 
-    // Submit job profile to agent
-    document.getElementById("jobForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      const payload = {
-        input: [{
-          role: "user",
-          content: [{
-            type: "text",
-            text: `Return ONLY a valid JSON array of candidates.
-                   Each candidate must have: id, name, email, role, match_score, skills, experience, location.
-                   Do not include any extra text.
-                   Job Role: ${formData.get("job_role")}
-                   Description: ${formData.get("job_description")}
-                   Required Skills: ${formData.get("required_skills")}
-                   Min Experience: ${formData.get("min_experience")} years`
-          }]
-        }]
-      };
+  // If still 404, try: 2025-04-01-preview or 2024-12-01-preview
+  const API_VERSION = "2025-05-15-preview";
 
-      try {
-        const res = await fetch(agentUrl, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": "Bearer 40faJDvzNVYJkJw91JH0c5rWyCEowDoWXrnst3NzKOdqIoK89MxfJQQJ99CDACHYHv6XJ3w3AAAAACOGxTiA"
-  },
-  body: JSON.stringify(payload)
-});
+  const AGENT_URL =
+    `https://${RESOURCE}.services.ai.azure.com/api/projects/${PROJECT}` +
+    `/agents/${AGENT_NAME}/protocols/openai/v1/responses` +
+    `?api-version=${API_VERSION}`;
+  // ─────────────────────────────────────────────────────────────────────────
 
-        const data = await res.json();
-        console.log("Agent raw response:", data);
+  async function submitJob() {
+    const role   = document.getElementById('job_role').value.trim();
+    const desc   = document.getElementById('job_description').value.trim();
+    const skills = document.getElementById('required_skills').value.trim();
+    const exp    = document.getElementById('min_experience').value.trim();
 
-        let candidates = [];
-        try {
-          const output = data.output || [];
-          const replyText = output[0]?.content?.[0]?.text;
+    if (!role || !desc || !skills || !exp) {
+      showStatus('error', 'Please fill in all fields.'); return;
+    }
 
-          if (replyText) {
-            candidates = JSON.parse(replyText);
-          } else {
-            alert("Agent response did not contain text. Check console for raw response.");
-          }
-        } catch (err) {
-          alert("Agent did not return valid JSON: " + err.message);
-        }
+    const btn = document.querySelector('.btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Searching…';
+    showStatus('loading', '⟳ Contacting Azure AI Foundry agent…');
+    document.getElementById('candidates-section').style.display = 'none';
 
-        renderCandidates(candidates);
-      } catch (err) {
-        alert("Error calling agent: " + err.message);
+    const payload = {
+      // ✅ FIX 1: plain string input (not a messages array)
+      input: `Return ONLY a valid JSON array (no markdown, no extra text) of 5 shortlisted candidates.
+Each object must have: id (string), name, email, role, match_score (number 0-100), skills (comma-separated string), experience (number), location.
+
+Job Role: ${role}
+Description: ${desc}
+Required Skills: ${skills}
+Minimum Experience: ${exp} years`
+    };
+
+    try {
+      const res = await fetch(AGENT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-key': API_KEY   // ✅ FIX 2: "api-key" header, NOT "Authorization: Bearer"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const rawText = await res.text();
+      console.log(`HTTP ${res.status}`, rawText);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}\n\n${rawText}`);
+
+      const data = JSON.parse(rawText);
+
+      // Handle output_text (simple) and output[] (array form)
+      let replyText = '';
+      if (typeof data.output_text === 'string') {
+        replyText = data.output_text;
+      } else if (Array.isArray(data.output)) {
+        replyText = data.output
+          .flatMap(o => Array.isArray(o.content) ? o.content : [])
+          .filter(c => c.type === 'text')
+          .map(c => c.text)
+          .join('');
       }
+
+      replyText = replyText.replace(/```json|```/g, '').trim();
+      const match = replyText.match(/\[[\s\S]*\]/);
+      if (!match) throw new Error('No JSON array in agent response.\n\nRaw:\n' + replyText.slice(0, 600));
+
+      renderCandidates(JSON.parse(match[0]));
+      hideStatus();
+
+    } catch (err) {
+      console.error(err);
+      showStatus('error', `❌ ${err.message}`);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Find Candidates →';
+    }
+  }
+
+  function renderCandidates(candidates) {
+    const container = document.getElementById('candidates');
+    const section   = document.getElementById('candidates-section');
+    container.innerHTML = '';
+
+    if (!Array.isArray(candidates) || !candidates.length) {
+      container.innerHTML = '<p style="color:var(--muted)">No candidates returned.</p>';
+      section.style.display = 'block';
+      return;
+    }
+
+    candidates.forEach(c => {
+      const card = document.createElement('div');
+      card.className = 'candidate-card';
+      card.id = `card-${c.id}`;
+      card.innerHTML = `
+        <div>
+          <div class="candidate-name">${c.name}</div>
+          <div class="candidate-role">${c.email}</div>
+          <div class="candidate-meta">
+            <div class="meta-tag">Role <span>${c.role}</span></div>
+            <div class="meta-tag">Exp <span>${c.experience} yrs</span></div>
+            <div class="meta-tag">Location <span>${c.location}</span></div>
+            <div class="meta-tag">Skills <span>${c.skills}</span></div>
+          </div>
+          <div class="action-btns" id="actions-${c.id}">
+            <button class="btn-approve" onclick="decide('${c.id}','approved')">&#10003; Approve</button>
+            <button class="btn-reject"  onclick="decide('${c.id}','rejected')">&#10005; Reject</button>
+          </div>
+        </div>
+        <div>
+          <div class="score-badge">${c.match_score}%</div>
+          <div class="score-label">Match Score</div>
+        </div>`;
+      container.appendChild(card);
     });
 
-    // Render candidates with Approve/Reject buttons
-    function renderCandidates(candidates) {
-      const container = document.getElementById("candidates");
-      container.innerHTML = "";
-      if (!Array.isArray(candidates) || candidates.length === 0) {
-        container.innerHTML = "<p>No candidates returned.</p>";
-        return;
-      }
-      candidates.forEach(c => {
-        const div = document.createElement("div");
-        div.className = "candidate";
-        div.innerHTML = `
-          <strong>${c.name}</strong> (${c.role})<br>
-          Email: ${c.email}<br>
-          Skills: ${c.skills}<br>
-          Experience: ${c.experience} years<br>
-          Match Score: ${c.match_score}<br>
-          <button onclick="sendDecision('${c.id}','approve')">Approve</button>
-          <button onclick="sendDecision('${c.id}','reject')">Reject</button>
-        `;
-        container.appendChild(div);
-      });
-    }
+    section.style.display = 'block';
+  }
 
-    // For now, just update UI with decision (no backend call)
-    function sendDecision(candidateId, status) {
-      alert(`Decision '${status}' recorded for candidate ${candidateId}`);
-    }
-  </script>
+  function decide(id, status) {
+    document.getElementById(`card-${id}`).classList.add(status);
+    document.getElementById(`actions-${id}`).innerHTML =
+      `<span class="decision-badge ${status}">${status}</span>`;
+  }
+
+  function showStatus(type, msg) {
+    const el = document.getElementById('status-banner');
+    el.className = type; el.textContent = msg; el.style.display = 'block';
+  }
+  function hideStatus() {
+    document.getElementById('status-banner').style.display = 'none';
+  }
+</script>
 </body>
 </html>
