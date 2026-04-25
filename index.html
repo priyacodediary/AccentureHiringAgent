@@ -22,6 +22,9 @@
     .btn-refresh:hover { border-color:var(--accent-light); color:var(--accent-light); }
     .token-hint { font-size:.75rem; color:var(--muted); margin-top:8px; background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-family:monospace; line-height:1.7; }
     .token-hint b { color:var(--text); }
+    .token-status { margin-top:8px; font-size:.78rem; padding:8px 12px; border-radius:6px; display:none; }
+    .token-status.set { display:block; background:#0a2a0a; border:1px solid var(--approve); color:var(--approve); }
+    .token-status.empty { display:block; background:#2a0a0f; border:1px solid var(--reject); color:var(--reject); }
     .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
     .form-group { display:flex; flex-direction:column; gap:6px; }
     .form-group.full { grid-column:1/-1; }
@@ -67,11 +70,12 @@
 <div class="card">
   <h2>Step 1 — Azure Token</h2>
   <div class="token-row">
-    <textarea id="token-input" placeholder="Paste your Bearer token here…"></textarea>
+    <textarea id="token-input" placeholder="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IlUxc1g4WUZIUzdaNlZsN1ZITEl6VGVqYnZqMCIsImtpZCI6IlUxc1g4WUZIUzdaNlZsN1ZITEl6VGVqYnZqMCJ9.eyJhdWQiOiJodHRwczovL2FpLmF6dXJlLmNvbSIsImlzcyI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzRlNzAwNWUxLTVjMDktNDY5YS04YmNkLTgwZmUyNDNmNTYzMC8iLCJpYXQiOjE3NzcxMDM0NzQsIm5iZiI6MTc3NzEwMzQ3NCwiZXhwIjoxNzc3MTA4MzYwLCJhY3IiOiIxIiwiYWlvIjoiQVpRQWEvOGJBQUFBTExmV0luUmY5dXNLQXNJcmxOOE5FRVdqdVdUYnU5ZWlzdExOcVBDMlgzQk5zeVlqdnphOUdXRFV3aEsyMHRVRkppaTY5K2hhV0VtdnlIRHlRWEJIdUNhRmI0N2FwdDJXQ0h1U21qYzc0eXFmVXVUUW5UMGQzbTNqNUpWN0JQZXpzelFmeHI5ZTdyeTRnb2hzMXNsZUNuZUZqZU4wZG5yVm9DZWFkTGFaQldIZHg4OThFSVVIUDlYakNHbjE3RWtsIiwiYWx0c2VjaWQiOiIxOmxpdmUuY29tOjAwMDM0MDAyQTY5REIzOTYiLCJhbXIiOlsicHdkIiwibWZhIl0sImFwcGlkIjoiYjY3N2MyOTAtY2Y0Yi00YThlLWE2MGUtOTFiYTY1MGE0YWJlIiwiYXBwaWRhY3IiOiIwIiwiZW1haWwiOiJwcmFubm95cmFpMDUyMkBnbWFpbC5jb20iLCJmYW1pbHlfbmFtZSI6IlJhaSIsImdpdmVuX25hbWUiOiJQcmFubm95IiwiZ3JvdXBzIjpbIjY1NzUwZjJhLTFkYmEtNDc1NS05ZDIwLTk1YjhmYWVmNzBmNyJdLCJpZHAiOiJsaXZlLmNvbSIsImlkdHlwIjoidXNlciIsImlwYWRkciI6IjI0MDU6MjAxOjYwMDg6MTgyZTpmOGE0OjZjZWU6NDc4ZDphYTlkIiwibmFtZSI6IlByYW5ub3kgUmFpIiwib2lkIjoiMTExY2M5NjItMTgzNC00YTVjLTg5ZjktZDgzMDI2ZTY0OGQ2IiwicHVpZCI6IjEwMDMyMDA1QzdFQkU2M0UiLCJyaCI6IjEuQVhBQTRRVndUZ2xjbWthTHpZRC1KRDlXTUY5dnBoamYyeGRNbmRjV05IRXFuTDRBQUdwd0FBLiIsInNjcCI6InVzZXJfaW1wZXJzb25hdGlvbiIsInNpZCI6IjAwNDA5MzVhLWJkMjYtYzNjZC02ZWJjLTM4NzQ3YmNhMmNiNCIsInN1YiI6IkRkaDYxNnd5d0s2MGRqbTFYZkJtWGpKZGpUNmNrNjduQnljUl9VMG5wbWciLCJ0aWQiOiI0ZTcwMDVlMS01YzA5LTQ2OWEtOGJjZC04MGZlMjQzZjU2MzAiLCJ1bmlxdWVfbmFtZSI6ImxpdmUuY29tI3ByYW5ub3lyYWkwNTIyQGdtYWlsLmNvbSIsInV0aSI6IjM5TUpXcGY0QkVPYlJGUW1uaTBNQUEiLCJ2ZXIiOiIxLjAiLCJ4bXNfYWN0X2ZjdCI6IjMgNSIsInhtc19mdGQiOiJjMkJvUVAyRXFnekxmc3d4NU5Fam1LbU05WlFYYVBqSU5NT1JJMDVhOUI0QllYTnBZWE52ZFhSb1pXRnpkQzFrYzIxeiIsInhtc19pZHJlbCI6IjEgMjYiLCJ4bXNfc3ViX2ZjdCI6IjYgMyJ9.KPulr9PGFgxFzS7fMLmor1nuffa8coGOgzp-ptydoG5W16pli1SToJgIsIkmw9XQz0iTQrhI1F6uAMMRSljxhDnXo5h5lVOzLT6x54hA-1GLmuFC_gmGlCzTbBHTASRKcY8a_lnY4fED1n8qY18mRpuZYBjxxeDV6v3mY8Xv4_yZg39nUEvgqq-Mu8d9Usp1UazAXJpMN7oKvDVmCeGrnSY9kg-XDDPFeom9wO2UGzjFIdA1IB5CLTHTJTd74Lt9Kx6AGqBp-IBv_o8bZUkFQEjH-4XDvysn9lrTd9pxScWafcRrH8KajguKAktaLxiUSJMP8_TMDugIL7iRymeZlg" oninput="checkToken()"></textarea>
     <button class="btn-refresh" onclick="showTokenHelp()">How to get token</button>
   </div>
+  <div id="token-status" class="token-status empty">⚠ No token added — paste your Bearer token above before searching</div>
   <div class="token-hint" id="token-hint">
-    Run this in your terminal and paste the token above:<br>
+    Run this in Azure Cloud Shell (portal.azure.com → click &gt;_ icon) and paste the output above:<br>
     <b>az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv</b><br><br>
     Token expires in ~60 min — re-run the command to refresh.
   </div>
@@ -119,6 +123,18 @@
     `/applications/${AGENT_APP}/protocols/openai/v1/responses` +
     `?api-version=${API_VERSION}`;
 
+  function checkToken() {
+    const token = document.getElementById('token-input').value.trim();
+    const status = document.getElementById('token-status');
+    if (token.length > 20) {
+      status.className = 'token-status set';
+      status.textContent = '✓ Token added — ready to search';
+    } else {
+      status.className = 'token-status empty';
+      status.textContent = '⚠ No token added — paste your Bearer token above before searching';
+    }
+  }
+
   function showTokenHelp() {
     document.getElementById('token-hint').style.display = 'block';
   }
@@ -130,7 +146,7 @@
     const skills = document.getElementById('required_skills').value.trim();
     const exp   = document.getElementById('min_experience').value.trim();
 
-    if (!token) { showStatus('error', '❌ Please paste your Bearer token in Step 1 first.\n\nRun: az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv'); return; }
+    if (!token) { showStatus('error', '❌ Please paste your Bearer token in Step 1 first.\n\nRun in Azure Cloud Shell: az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv'); return; }
     if (!role || !desc || !skills || !exp) { showStatus('error', '❌ Please fill in all job profile fields.'); return; }
 
     const btn = document.querySelector('.btn-submit');
@@ -155,7 +171,7 @@ Minimum Experience: ${exp} years`
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`   // Entra token — required for published agent endpoint
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });
@@ -163,7 +179,7 @@ Minimum Experience: ${exp} years`
       const rawText = await res.text();
       console.log(`HTTP ${res.status}`, rawText);
 
-      if (res.status === 401) throw new Error('Token expired or invalid.\n\nRe-run: az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv');
+      if (res.status === 401) throw new Error('Token expired or invalid.\n\nRe-run in Azure Cloud Shell: az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv');
       if (res.status === 403) throw new Error('Access denied (403). Make sure your Azure account has the "Azure AI User" role on the Foundry project.');
       if (!res.ok) throw new Error(`HTTP ${res.status}\n\n${rawText}`);
 
