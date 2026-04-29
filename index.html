@@ -128,25 +128,9 @@
   <p>AI-Powered Candidate Shortlisting &amp; Approval Workflow</p>
 </header>
 
-<!-- ── STEP 1: Token ── -->
+<!-- ── STEP 1: Job Profile ── -->
 <div class="card">
-  <h2> Azure Bearer Token</h2>
-  <div class="token-row">
-    <textarea id="token-input"
-      placeholder="Paste Bearer token here — get it from Azure Cloud Shell:&#10;az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv"
-      oninput="checkToken()"></textarea>
-  </div>
-  <div id="token-status" class="token-status empty">⚠ No token — paste your Bearer token above</div>
-  <div class="token-hint">
-    Run in Azure Cloud Shell (portal.azure.com → click &gt;_ icon):<br>
-    <b>az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv</b><br><br>
-    Token expires in ~60 min — re-run to refresh.
-  </div>
-</div>
-
-<!-- ── STEP 2: Job Profile ── -->
-<div class="card">
-  <h2>Step 2 — Job Profile</h2>
+  <h2>Job Profile</h2>
   <div class="form-grid">
     <div class="form-group">
       <label>Job Role</label>
@@ -173,6 +157,21 @@
 <div id="candidates-section" style="display:none">
   <h2>Shortlisted Candidates</h2>
   <div id="candidates"></div>
+</div>
+  <!-- ── STEP 2: Token ── -->
+<div class="card">
+  <h2> Azure Bearer Token</h2>
+  <div class="token-row">
+    <textarea id="token-input"
+      placeholder="Paste Bearer token here — get it from Azure Cloud Shell:&#10;az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv"
+      oninput="checkToken()"></textarea>
+  </div>
+  <div id="token-status" class="token-status empty">⚠ No token — paste your Bearer token above</div>
+  <div class="token-hint">
+    Run in Azure Cloud Shell (portal.azure.com → click &gt;_ icon):<br>
+    <b>az account get-access-token --resource https://ai.azure.com --query accessToken -o tsv</b><br><br>
+    Token expires in ~60 min — re-run to refresh.
+  </div>
 </div>
 
 <script>
